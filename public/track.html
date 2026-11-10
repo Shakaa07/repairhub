@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My requests — RepairHub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="wrap" style="max-width:820px">
+  <section>
+    <h1>My requests</h1>
+    <p class="hint">Enter the phone number you used. Landlords see all their flats here.</p>
+    <form id="lookup" class="panel" style="grid-template-columns:1fr auto;align-items:end">
+      <label>Phone <input name="phone" type="tel" required></label>
+      <button class="btn" type="submit">Show</button>
+    </form>
+    <div id="errors" class="errors" role="alert" style="margin-top:12px"></div>
+    <div id="list"></div>
+  </section>
+</main>
+<script src="app.js"></script>
+<script>
+  renderHeader('track.html');
+  logEvent('track_open');
+  const form = document.getElementById('lookup');
+  const list = document.getElementById('list');
+  const errors = document.getElementById('errors');
+  let phone = '';
+
+  async function load() {
+    try {
+      const rows = await api('/api/track?phone=' + encodeURIComponent(phone));
+      showErrors(errors, []);
+      list.innerHTML = '';
+      if (!rows.length) { list.append(el('p', {}, 'No requests found for this number.')); return; }
+      const byProperty = rows.reduce((acc, r) => ((acc[r.property] ||= []).push(r), acc), {});
+      Object.entries(byProperty).forEach(([prop, reqs]) => {
+        list.append(el('h3', { class: 'property' }, prop + ` (${reqs.length})`));
+        reqs.reverse().forEach((r) => list.append(card(r)));
+      });
+    } catch (err) { showErrors(errors, [err.message]); }
+  }
+
+  function card(r) {
+    const box = el('div', { class: 'req' },
+      el('div', {}, el('b', {}, r.id), ' · ', r.category, ' · ', fmtDate(r.createdAt)),
+      el('div', {}, el('span', { class: 'status ' + r.status }, STATUS_LABELS[r.status])),
+      el('div', {}, r.description),
+      el('div', { class: 'hint' }, 'Starting price: ' + r.estimate));
+    if (r.specialist) box.append(el('div', {}, 'Specialist: ', el('b', {}, r.specialist.name), ' · ', el('a', { href: 'tel:' + r.specialist.phone }, r.specialist.phone)));
+    if (r.status === 'done') {
+      if (!r.hasFeedback) box.append(feedbackForm(r));
+      else box.append(el('div', { class: 'hint' }, 'Thank you for your feedback.'));
+      if (!r.hasClaim) box.append(claimForm(r));
+      else box.append(el('div', { class: 'hint' }, 'Problem reported — our team will contact you.'));
+    }
+    return box;
+  }
+
+  function feedbackForm(r) {
+    const f = el('form', { class: 'panel' },
+      el('b', {}, 'How was the work?'),
+      el('label', {}, 'Rating', select('rating', [['5', '5 — excellent'], ['4', '4'], ['3', '3'], ['2', '2'], ['1', '1 — bad']])),
+      el('label', {}, 'Would you use RepairHub again?', select('wouldUseAgain', [['yes', 'Yes'], ['maybe', 'Maybe'], ['no', 'No']])),
+      el('label', {}, 'Would you pay through the app if the work had a guarantee?', select('wouldPayInApp', [['yes', 'Yes'], ['maybe', 'Maybe'], ['no', 'No']])),
+      el('label', {}, 'Comment', el('textarea', { name: 'comment' })),
+      el('button', { class: 'btn small', type: 'submit' }, 'Send feedback'));
+    f.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const body = Object.fromEntries(new FormData(f).entries());
+      try { await api('/api/feedback', { method: 'POST', body: { ...body, requestId: r.id, phone } }); load(); }
+      catch (err) { showErrors(errors, [err.message]); }
+    });
+    return f;
+  }
+
+  function claimForm(r) {
+    const f = el('form', { class: 'panel' },
+      el('b', {}, 'Something went wrong? (within 30 days)'),
+      el('label', {}, 'What is the problem?', el('textarea', { name: 'problem' })),
+      el('button', { class: 'btn small dark', type: 'submit' }, 'Report a problem'));
+    f.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      try { await api('/api/claims', { method: 'POST', body: { requestId: r.id, phone, problem: f.problem.value } }); load(); }
+      catch (err) { showErrors(errors, [err.message]); }
+    });
+    return f;
+  }
+
+  function select(name, options) {
+    return el('select', { name }, options.map(([v, t]) => el('option', { value: v }, t)));
+  }
+
+  form.addEventListener('submit', (e) => { e.preventDefault(); phone = form.phone.value; load(); });
+  const preset = new URLSearchParams(location.search).get('phone');
+  if (preset) { form.phone.value = preset; phone = preset; load(); }
+</script>
+</body>
+</html>

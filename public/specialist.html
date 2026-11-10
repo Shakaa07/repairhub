@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>For specialists — RepairHub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="wrap" style="max-width:720px">
+  <section>
+    <h1>Work with RepairHub</h1>
+    <p class="hint">Get orders from owners, tenants and landlords in Astana. Our team checks your identity and experience before the first order. Top-rated specialists get priority.</p>
+    <div id="done" class="success" hidden></div>
+    <form id="form" class="panel" novalidate>
+      <div id="errors" class="errors" role="alert"></div>
+      <div class="row">
+        <label>Name <input name="name" required></label>
+        <label>Phone <input name="phone" type="tel" required></label>
+      </div>
+      <div>
+        <div style="font-weight:500;margin-bottom:6px">What do you do?</div>
+        <div class="chips" id="cats"></div>
+      </div>
+      <div class="row">
+        <label>Years of experience <input name="experienceYears" type="number" min="0" max="60" value="1"></label>
+        <label>District you work in <input name="district" placeholder="For example: Esil"></label>
+      </div>
+      <label>About you <textarea name="about" placeholder="Your skills, tools, examples of work"></textarea></label>
+      <label class="check"><input type="checkbox" name="consent"> I agree to identity and experience checks by the RepairHub team.</label>
+      <button class="btn" type="submit">Apply</button>
+    </form>
+  </section>
+</main>
+<script src="app.js"></script>
+<script>
+  renderHeader('specialist.html');
+  logEvent('specialist_open');
+  const form = document.getElementById('form');
+  const errors = document.getElementById('errors');
+  api('/api/categories').then((cats) => {
+    const box = document.getElementById('cats');
+    cats.forEach((c) => box.append(el('label', {}, el('input', { type: 'checkbox', name: 'categories', value: c.id }), c.label)));
+  });
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = new FormData(form);
+    const body = { ...Object.fromEntries(f.entries()), categories: f.getAll('categories'), consent: form.consent.checked };
+    try {
+      const out = await api('/api/specialists', { method: 'POST', body });
+      showErrors(errors, []);
+      form.hidden = true;
+      const done = document.getElementById('done');
+      done.append(el('h2', {}, 'Application sent'), el('p', {}, 'Your application number is ', el('b', {}, out.id), '. Our team will call you to check your documents.'));
+      done.hidden = false;
+    } catch (err) { showErrors(errors, err.list.length ? err.list : [err.message]); }
+  });
+</script>
+</body>
+</html>

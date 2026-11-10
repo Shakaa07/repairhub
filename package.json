@@ -1,0 +1,13 @@
+{
+  "name": "repairhub-mvp",
+  "version": "1.0.0",
+  "description": "RepairHub MVP: request a home repair in Astana, specialist sign-up and a team dashboard with metrics.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "engines": { "node": ">=18" },
+  "license": "UNLICENSED",
+  "private": true
+}

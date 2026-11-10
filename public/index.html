@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RepairHub — Home repairs with a guarantee</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="wrap">
+  <div class="hero">
+    <div>
+      <h1>Home repairs with a guarantee</h1>
+      <p class="lead">Describe the problem, see the starting price, and we match you with a checked specialist in Astana. If the work goes wrong, we help fix it.</p>
+      <p><a class="btn" href="request.html">Request a repair</a> &nbsp; <a class="btn ghost" href="track.html">My requests</a></p>
+    </div>
+    <div class="card-dark">
+      <p><b>For owners and landlords</b></p>
+      <p>Keep requests for several flats in one place. Your tenant can send a request with your phone number, and you see every repair and its status.</p>
+    </div>
+  </div>
+
+  <section>
+    <h2>Why RepairHub</h2>
+    <div class="grid3">
+      <div class="card"><h3>Checked specialists</h3><p>Every specialist applies, and our team checks identity and experience before the first order.</p></div>
+      <div class="card"><h3>Price before the visit</h3><p>You see a starting price for your category, and the specialist confirms a fixed price before coming.</p></div>
+      <div class="card"><h3>Help if something goes wrong</h3><p>Report a problem within 30 days of the job and our team helps arrange a fix.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <div class="grid4">
+      <div class="card"><div class="step-num">01</div><p>Send a request in 2 minutes</p></div>
+      <div class="card"><div class="step-num">02</div><p>We call you and match a checked specialist</p></div>
+      <div class="card"><div class="step-num">03</div><p>The job is done; you track the status online</p></div>
+      <div class="card"><div class="step-num">04</div><p>Rate the work or report a problem</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Categories and starting prices</h2>
+    <div class="grid3" id="cats"></div>
+    <p class="hint">Starting prices are based on public market data for Astana. The final price is fixed with the specialist before the visit.</p>
+  </section>
+</main>
+<script src="app.js"></script>
+<script>
+  renderHeader('index.html');
+  logEvent('visit');
+  api('/api/categories').then((cats) => {
+    const box = document.getElementById('cats');
+    cats.forEach((c) => box.append(el('div', { class: 'card' }, el('h3', {}, c.label), el('div', { class: 'price' }, c.estimate))));
+  });
+</script>
+</body>
+</html>

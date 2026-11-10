@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Team dashboard — RepairHub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="brand" href="index.html">REPAIR<span>HUB</span></a><nav><a class="active" href="admin.html">Team dashboard</a><a href="index.html">Public site</a></nav></div></header>
+<main class="wrap">
+  <section id="login">
+    <h1>Team dashboard</h1>
+    <form id="loginForm" class="panel" style="max-width:420px">
+      <label>Password <input name="password" type="password" autocomplete="current-password"></label>
+      <div id="loginErr" class="errors" role="alert"></div>
+      <button class="btn" type="submit">Open</button>
+    </form>
+  </section>
+
+  <div id="app" hidden>
+    <section>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <h1 style="margin:0">Team dashboard</h1>
+        <div><button class="btn small ghost" id="refresh">Refresh</button> <button class="btn small dark" id="csv">Export requests (CSV)</button></div>
+      </div>
+    </section>
+    <section><h2>Key metrics</h2><div class="kpis" id="kpis"></div></section>
+    <section><h2>Funnel</h2><div class="funnel" id="funnel"></div></section>
+    <section><h2>Requests</h2><div class="table-wrap"><table id="requests"></table></div></section>
+    <section><h2>Specialists</h2><div class="table-wrap"><table id="specialists"></table></div></section>
+    <section><h2>Feedback</h2><div class="table-wrap"><table id="feedback"></table></div></section>
+    <section><h2>Problem reports (guarantee)</h2><div class="table-wrap"><table id="claims"></table></div></section>
+  </div>
+</main>
+<script src="app.js"></script>
+<script>
+  let password = sessionStorage.getItem('rh_admin') || '';
+  const admin = (path, opts = {}) => api(path, { ...opts, headers: { 'x-admin-password': password } });
+
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    password = e.target.password.value;
+    try { await load(); sessionStorage.setItem('rh_admin', password); }
+    catch (err) { showErrors(document.getElementById('loginErr'), [err.message]); }
+  });
+  document.getElementById('refresh').addEventListener('click', load);
+  document.getElementById('csv').addEventListener('click', async () => {
+    const res = await fetch('/api/admin/export.csv', { headers: { 'x-admin-password': password } });
+    const url = URL.createObjectURL(await res.blob());
+    el('a', { href: url, download: 'repairhub-requests.csv' }).click();
+  });
+
+  async function load() {
+    const data = await admin('/api/admin/overview');
+    document.getElementById('login').hidden = true;
+    document.getElementById('app').hidden = false;
+    renderKpis(data.metrics);
+    renderFunnel(data.metrics);
+    renderRequests(data);
+    renderSpecialists(data.specialists);
+    renderFeedback(data.feedback);
+    renderClaims(data.claims);
+  }
+
+  function renderKpis(m) {
+    const items = [
+      ['Visits', m.visits], ['Request form opens', m.formOpens], ['Requests', m.requests],
+      ['Visit → request', m.visitToRequestPct + '%'], ['Completed jobs', m.completed],
+      ['Specialists applied', m.specialistsApplied], ['Specialists approved', m.specialistsApproved],
+      ['Average rating', m.avgRating ?? '—'], ['Would pay in app', m.feedbackCount ? m.wouldPayInAppPct + '%' : '—'],
+      ['Problem reports', m.guaranteeClaims],
+    ];
+    const box = document.getElementById('kpis');
+    box.innerHTML = '';
+    items.forEach(([l, v]) => box.append(el('div', { class: 'kpi' }, el('div', { class: 'v' }, v), el('div', { class: 'l' }, l))));
+    const roles = Object.entries(m.byRole).map(([k, v]) => `${k}: ${v}`).join(' · ') || 'no requests yet';
+    box.append(el('div', { class: 'kpi', style: 'grid-column:1/-1' }, el('div', { class: 'l' }, 'Requests by role: ' + roles)));
+  }
+
+  function renderFunnel(m) {
+    const steps = [['Visits', m.visits], ['Opened the form', m.formOpens], ['Sent a request', m.requests], ['Job completed', m.completed], ['Left feedback', m.feedbackCount]];
+    const max = Math.max(1, ...steps.map((s) => s[1]));
+    const box = document.getElementById('funnel');
+    box.innerHTML = '';
+    steps.forEach(([l, v]) => box.append(el('div', { class: 'bar' }, el('span', {}, l),
+      el('div', { class: 'track' }, el('div', { class: 'fill', style: `width:${(v / max) * 100}%` })), el('b', {}, v))));
+  }
+
+  function renderRequests({ requests, specialists, categories, statuses }) {
+    const approved = specialists.filter((s) => s.status === 'approved');
+    const t = document.getElementById('requests');
+    t.innerHTML = '';
+    t.append(el('tr', {}, ['ID', 'Date', 'Who', 'Category', 'Problem', 'Flat / district', 'Contact', 'Status', 'Specialist'].map((h) => el('th', {}, h))));
+    if (!requests.length) t.append(el('tr', {}, el('td', { colspan: 9 }, 'No requests yet.')));
+    requests.forEach((r) => {
+      const status = el('select', {}, statuses.map((s) => el('option', { value: s }, s)));
+      status.value = r.status;
+      status.addEventListener('change', () => admin('/api/admin/requests/' + r.id, { method: 'PATCH', body: { status: status.value } }).then(load));
+      const spec = el('select', {}, el('option', { value: '' }, '—'), approved.map((s) => el('option', { value: s.id }, s.name)));
+      spec.value = r.specialistId || '';
+      spec.addEventListener('change', () => admin('/api/admin/requests/' + r.id, { method: 'PATCH', body: { specialistId: spec.value || null } }).then(load));
+      t.append(el('tr', {}, el('td', {}, r.id), el('td', {}, fmtDate(r.createdAt)), el('td', {}, r.role),
+        el('td', {}, categories[r.category].label), el('td', {}, r.description),
+        el('td', {}, r.property + (r.district ? ' · ' + r.district : '')),
+        el('td', {}, r.name, el('br'), el('a', { href: 'tel:' + r.phone }, r.phone)), el('td', {}, status), el('td', {}, spec)));
+    });
+  }
+
+  function renderSpecialists(list) {
+    const t = document.getElementById('specialists');
+    t.innerHTML = '';
+    t.append(el('tr', {}, ['ID', 'Name', 'Phone', 'Categories', 'Experience', 'District', 'Status', ''].map((h) => el('th', {}, h))));
+    if (!list.length) t.append(el('tr', {}, el('td', { colspan: 8 }, 'No applications yet.')));
+    list.forEach((s) => {
+      const act = (status, text) => el('button', { class: 'btn small', onclick: () => admin('/api/admin/specialists/' + s.id, { method: 'PATCH', body: { status } }).then(load) }, text);
+      t.append(el('tr', {}, el('td', {}, s.id), el('td', {}, s.name), el('td', {}, s.phone), el('td', {}, s.categories.join(', ')),
+        el('td', {}, s.experienceYears + ' yrs'), el('td', {}, s.district), el('td', {}, s.status),
+        el('td', {}, s.status !== 'approved' ? act('approved', 'Approve') : '', ' ', s.status !== 'rejected' ? act('rejected', 'Reject') : '')));
+    });
+  }
+
+  function renderFeedback(list) {
+    const t = document.getElementById('feedback');
+    t.innerHTML = '';
+    t.append(el('tr', {}, ['Request', 'Rating', 'Use again', 'Pay in app', 'Comment'].map((h) => el('th', {}, h))));
+    if (!list.length) t.append(el('tr', {}, el('td', { colspan: 5 }, 'No feedback yet.')));
+    list.forEach((f) => t.append(el('tr', {}, el('td', {}, f.requestId), el('td', {}, f.rating), el('td', {}, f.wouldUseAgain), el('td', {}, f.wouldPayInApp), el('td', {}, f.comment))));
+  }
+
+  function renderClaims(list) {
+    const t = document.getElementById('claims');
+    t.innerHTML = '';
+    t.append(el('tr', {}, ['ID', 'Request', 'Date', 'Problem'].map((h) => el('th', {}, h))));
+    if (!list.length) t.append(el('tr', {}, el('td', { colspan: 4 }, 'No problem reports.')));
+    list.forEach((c) => t.append(el('tr', {}, el('td', {}, c.id), el('td', {}, c.requestId), el('td', {}, fmtDate(c.createdAt)), el('td', {}, c.problem))));
+  }
+
+  if (password) load().catch(() => sessionStorage.removeItem('rh_admin'));
+</script>
+</body>
+</html>

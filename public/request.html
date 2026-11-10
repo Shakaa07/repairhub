@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Request a repair — RepairHub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="wrap" style="max-width:720px">
+  <section>
+    <h1>Request a repair</h1>
+    <p class="hint">Takes about 2 minutes. Our team calls you to confirm the specialist and the fixed price.</p>
+
+    <div id="done" class="success" hidden></div>
+
+    <form id="form" class="panel" novalidate>
+      <div id="errors" class="errors" role="alert"></div>
+      <label>What needs fixing?
+        <select name="category" id="category" required><option value="">Choose a category</option></select>
+      </label>
+      <p class="hint" id="estimate" aria-live="polite"></p>
+      <label>Describe the problem
+        <textarea name="description" placeholder="For example: the kitchen tap is leaking under the sink" required></textarea>
+      </label>
+      <div class="row">
+        <label>District
+          <select name="district">
+            <option value="">Choose</option>
+            <option>Esil</option><option>Almaty district</option><option>Saryarka</option>
+            <option>Baikonyr</option><option>Nura</option>
+          </select>
+        </label>
+        <label>When?
+          <select name="urgency">
+            <option value="today">Today, urgent</option>
+            <option value="this_week" selected>This week</option>
+            <option value="flexible">Flexible</option>
+          </select>
+        </label>
+      </div>
+      <label>Which flat? <span class="hint">(helps landlords with several flats)</span>
+        <input name="property" placeholder="For example: Flat on Mangilik El 20">
+      </label>
+      <label>Who are you?
+        <select name="role" required>
+          <option value="">Choose</option>
+          <option value="owner">I own this flat</option>
+          <option value="tenant">I rent this flat</option>
+          <option value="landlord">I rent this flat out</option>
+        </select>
+      </label>
+      <div class="row">
+        <label>Your name <input name="name" autocomplete="name" required></label>
+        <label>Phone <input name="phone" type="tel" autocomplete="tel" placeholder="+7 7__ ___ __ __" required></label>
+      </div>
+      <label class="check"><input type="checkbox" name="consent"> I agree that the RepairHub team may call me about this request.</label>
+      <button class="btn" type="submit">Send request</button>
+    </form>
+  </section>
+</main>
+<script src="app.js"></script>
+<script>
+  renderHeader('request.html');
+  logEvent('form_open');
+  const form = document.getElementById('form');
+  const errors = document.getElementById('errors');
+  const estimate = document.getElementById('estimate');
+  let cats = [];
+
+  api('/api/categories').then((list) => {
+    cats = list;
+    const sel = document.getElementById('category');
+    list.forEach((c) => sel.append(el('option', { value: c.id }, c.label)));
+  });
+
+  document.getElementById('category').addEventListener('change', (e) => {
+    const c = cats.find((x) => x.id === e.target.value);
+    estimate.textContent = c ? `Starting price: ${c.estimate}` + (c.source ? ` (market data: ${c.source})` : '') : '';
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = new FormData(form);
+    const body = Object.fromEntries(f.entries());
+    body.consent = form.consent.checked;
+    const btn = form.querySelector('button');
+    btn.disabled = true;
+    try {
+      const out = await api('/api/requests', { method: 'POST', body });
+      showErrors(errors, []);
+      form.hidden = true;
+      const done = document.getElementById('done');
+      done.append(
+        el('h2', {}, 'Request sent'),
+        el('p', {}, 'Your request number is ', el('b', {}, out.id), '. Starting price: ', el('b', {}, out.estimate), '.'),
+        el('p', {}, 'Our team will call you to confirm a checked specialist and a fixed price.'),
+        el('p', {}, el('a', { class: 'btn dark', href: 'track.html?phone=' + encodeURIComponent(body.phone) }, 'Track my requests')));
+      done.hidden = false;
+    } catch (err) {
+      showErrors(errors, err.list.length ? err.list : [err.message]);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
