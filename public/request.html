@@ -73,6 +73,8 @@
     cats = list;
     const sel = document.getElementById('category');
     list.forEach((c) => sel.append(el('option', { value: c.id }, c.label)));
+    const pre = new URLSearchParams(location.search).get('category');
+    if (pre && list.some((c) => c.id === pre)) { sel.value = pre; sel.dispatchEvent(new Event('change')); }
   });
 
   document.getElementById('category').addEventListener('change', (e) => {

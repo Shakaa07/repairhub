@@ -3,57 +3,186 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>RepairHub — Home repairs with a guarantee</title>
+  <title>RepairHub — Home repairs with a guarantee in Astana</title>
+  <meta name="description" content="Checked repair specialists in Astana. See the starting price before the visit and get a 30-day guarantee on the work.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-<main class="wrap">
-  <div class="hero">
-    <div>
-      <h1>Home repairs with a guarantee</h1>
-      <p class="lead">Describe the problem, see the starting price, and we match you with a checked specialist in Astana. If the work goes wrong, we help fix it.</p>
-      <p><a class="btn" href="request.html">Request a repair</a> &nbsp; <a class="btn ghost" href="track.html">My requests</a></p>
-    </div>
-    <div class="card-dark">
-      <p><b>For owners and landlords</b></p>
-      <p>Keep requests for several flats in one place. Your tenant can send a request with your phone number, and you see every repair and its status.</p>
-    </div>
-  </div>
+<body class="home">
 
-  <section>
-    <h2>Why RepairHub</h2>
-    <div class="grid3">
-      <div class="card"><h3>Checked specialists</h3><p>Every specialist applies, and our team checks identity and experience before the first order.</p></div>
-      <div class="card"><h3>Price before the visit</h3><p>You see a starting price for your category, and the specialist confirms a fixed price before coming.</p></div>
-      <div class="card"><h3>Help if something goes wrong</h3><p>Report a problem within 30 days of the job and our team helps arrange a fix.</p></div>
+<!-- Icon set (inline, no external images) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v5.5c0 4.4-3 8-7 9.5-4-1.5-7-5.1-7-9.5V6l7-3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M8.8 12.2l2.2 2.2 4.3-4.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8L3 12z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="7.5" cy="8.5" r="1.6" fill="currentColor"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 21c1.2-4 4.3-6 8-6s6.8 2 8 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3.5 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-tool" viewBox="0 0 24 24"><path d="M14.5 5.5a4 4 0 0 0 4.9 4.9l-9.2 9.2a2.1 2.1 0 0 1-3-3l9.2-9.2a4 4 0 0 0-1.9-1.9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-plumbing" viewBox="0 0 24 24"><path d="M4 8h8a3 3 0 0 1 3 3v9M4 8V5M4 8v3M15 20h-3M15 20h3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 5c0 1.5-1 2.5-1 3.5a1 1 0 0 0 2 0c0-1-1-2-1-3.5z" fill="currentColor"/></symbol>
+  <symbol id="i-electrical" viewBox="0 0 24 24"><path d="M13 2L5 13h6l-1 9 8-11h-6l1-9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-appliance" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="13.5" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 6.5h2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-furniture" viewBox="0 0 24 24"><path d="M4 11V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3M3 11h18v6H3zM5 17v3M19 17v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+  <symbol id="i-renovation" viewBox="0 0 24 24"><rect x="4" y="3" width="13" height="6" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M17 6h2v5h-7v3M11 14h2v7h-2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<main>
+  <!-- HERO -->
+  <section class="h-hero">
+    <div class="wrap h-hero-grid">
+      <div>
+        <p class="eyebrow">Home repair service · Astana</p>
+        <h1>Home repairs you can trust</h1>
+        <p class="lead">Tell us what needs fixing. We match you with a checked specialist, agree a fixed price before the visit, and guarantee the result for 30 days.</p>
+        <div class="h-cta">
+          <a class="btn btn-lg" href="request.html">Request a repair</a>
+          <a class="btn ghost btn-lg" href="track.html">Track my request</a>
+        </div>
+        <ul class="h-ticks">
+          <li><svg><use href="#i-check"/></svg>Checked specialists</li>
+          <li><svg><use href="#i-check"/></svg>Price before the visit</li>
+          <li><svg><use href="#i-check"/></svg>30-day guarantee</li>
+        </ul>
+      </div>
+
+      <div class="h-photo">
+        <img src="img/hero-plumber.jpg" alt="A specialist repairing pipes under a kitchen sink" width="736" height="1104">
+        <div class="h-float">
+          <span class="h-float-ic"><svg><use href="#i-shield"/></svg></span>
+          <div><b>30-day guarantee</b><small>on every completed job</small></div>
+        </div>
+        <div class="h-float h-float-2">
+          <span class="status matched">Specialist matched</span>
+          <small>Example: kitchen tap · from 9,000 ₸</small>
+        </div>
+      </div>
     </div>
   </section>
 
-  <section>
-    <h2>How it works</h2>
-    <div class="grid4">
-      <div class="card"><div class="step-num">01</div><p>Send a request in 2 minutes</p></div>
-      <div class="card"><div class="step-num">02</div><p>We call you and match a checked specialist</p></div>
-      <div class="card"><div class="step-num">03</div><p>The job is done; you track the status online</p></div>
-      <div class="card"><div class="step-num">04</div><p>Rate the work or report a problem</p></div>
+  <!-- FACTS STRIP -->
+  <section class="h-facts">
+    <div class="wrap h-facts-grid">
+      <div><b>30 days</b><span>guarantee on every job</span></div>
+      <div><b>2 min</b><span>to send a request</span></div>
+      <div><b>5</b><span>repair categories</span></div>
+      <div><b>5.0 / 5</b><span>rating from our first pilot customers</span></div>
     </div>
   </section>
 
-  <section>
-    <h2>Categories and starting prices</h2>
-    <div class="grid3" id="cats"></div>
-    <p class="hint">Starting prices are based on public market data for Astana. The final price is fixed with the specialist before the visit.</p>
+  <!-- SERVICES -->
+  <section class="h-section">
+    <div class="wrap">
+      <div class="h-head">
+        <p class="eyebrow">Services</p>
+        <h2>What we fix</h2>
+        <p class="h-sub">Starting prices are based on public market data for Astana. The specialist confirms a fixed price before coming.</p>
+      </div>
+      <div class="h-services" id="cats"></div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="h-section h-soft">
+    <div class="wrap">
+      <div class="h-head">
+        <p class="eyebrow">How it works</p>
+        <h2>From problem to fixed in four steps</h2>
+      </div>
+      <ol class="h-steps">
+        <li><span class="n">01</span><h3>Send a request</h3><p>Choose a category, describe the problem and leave your phone number.</p></li>
+        <li><span class="n">02</span><h3>We match a specialist</h3><p>Our team calls you, picks a checked specialist and fixes the price.</p></li>
+        <li><span class="n">03</span><h3>The job is done</h3><p>Follow the status of every request online with your phone number.</p></li>
+        <li><span class="n">04</span><h3>Rate or report</h3><p>Rate the work, or report a problem within 30 days and we help fix it.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- GUARANTEE -->
+  <section class="h-section">
+    <div class="wrap h-guarantee">
+      <div class="h-g-photo"><img src="img/guarantee-wall.jpg" alt="A specialist preparing a wall for repair" width="736" height="736" loading="lazy"><div class="h-g-badge"><b>30</b><span>days</span></div></div>
+      <div>
+        <p class="eyebrow">Our guarantee</p>
+        <h2>If the work goes wrong, we don’t disappear</h2>
+        <p class="h-sub">Other services help you find a specialist. RepairHub stays responsible for the result.</p>
+        <ul class="h-list">
+          <li><svg><use href="#i-check"/></svg>Report a problem within 30 days of the job on the “My requests” page</li>
+          <li><svg><use href="#i-check"/></svg>Our team reviews it and arranges corrective work</li>
+          <li><svg><use href="#i-check"/></svg>Specialists with complaints lose priority or are removed</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- AUDIENCES -->
+  <section class="h-section h-soft">
+    <div class="wrap h-two">
+      <article class="h-card dark">
+        <img class="h-card-img" src="img/landlord-room.jpg" alt="A room in the middle of renovation" loading="lazy">
+        <svg class="h-ic"><use href="#i-home"/></svg>
+        <h3>For owners and landlords</h3>
+        <p>Keep repairs for several flats in one place. Your tenant sends a request with your phone number, and you see every repair and its status.</p>
+        <a class="h-link" href="request.html">Request a repair <svg><use href="#i-arrow"/></svg></a>
+      </article>
+      <article class="h-card">
+        <img class="h-card-img" src="img/specialist-lamp.jpg" alt="A person installing a ceiling lamp" loading="lazy">
+        <svg class="h-ic"><use href="#i-tool"/></svg>
+        <h3>For specialists</h3>
+        <p>Get orders from owners, tenants and landlords in Astana. We check your identity and experience; top-rated specialists get priority.</p>
+        <a class="h-link" href="specialist.html">Apply to work with us <svg><use href="#i-arrow"/></svg></a>
+      </article>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="h-section">
+    <div class="wrap h-faq-wrap">
+      <div class="h-head">
+        <p class="eyebrow">FAQ</p>
+        <h2>Questions</h2>
+      </div>
+      <div class="h-faq">
+        <details><summary>How much does a repair cost?</summary><p>Plumbing starts from 9,000 ₸ and electrical work from 5,000 ₸. For other categories the specialist names a fixed price after seeing a description or photo, always before the visit.</p></details>
+        <details><summary>How do you check specialists?</summary><p>Every specialist fills in an application. Our team checks identity and experience before the first order, and customer ratings decide who gets priority.</p></details>
+        <details><summary>What does the 30-day guarantee cover?</summary><p>If a problem appears within 30 days of the job, report it on the “My requests” page. Our team reviews it and arranges corrective work with the specialist or another checked specialist.</p></details>
+        <details><summary>Do I need to register?</summary><p>No. You only need your phone number to send a request and to track it.</p></details>
+        <details><summary>Where do you work?</summary><p>We are piloting in Astana. RepairHub is a student project of the Technological Entrepreneurship course, and requests are handled by our team.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="h-band">
+    <div class="wrap h-band-grid">
+      <div>
+        <h2>Something broke at home?</h2>
+        <p>Send a request in 2 minutes. We call you back and match a checked specialist.</p>
+      </div>
+      <a class="btn btn-lg" href="request.html">Request a repair</a>
+    </div>
   </section>
 </main>
+
 <script src="app.js"></script>
 <script>
   renderHeader('index.html');
   logEvent('visit');
   api('/api/categories').then((cats) => {
     const box = document.getElementById('cats');
-    cats.forEach((c) => box.append(el('div', { class: 'card' }, el('h3', {}, c.label), el('div', { class: 'price' }, c.estimate))));
+    cats.forEach((c) => {
+      const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      icon.setAttribute('class', 'h-ic');
+      const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+      use.setAttribute('href', '#i-' + c.id);
+      icon.append(use);
+      box.append(el('a', { class: 'h-service', href: 'request.html?category=' + encodeURIComponent(c.id) },
+        icon,
+        el('h3', {}, c.label),
+        el('p', { class: 'price' }, c.estimate),
+        el('span', { class: 'h-more' }, 'Request')));
+    });
   });
 </script>
 </body>
