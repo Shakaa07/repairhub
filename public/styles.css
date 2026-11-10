@@ -244,3 +244,25 @@ th { background: var(--soft); font-weight: 600; }
   .h-guarantee { grid-template-columns: 1fr; }
   .h-g-photo .h-g-badge { right: 12px; bottom: 12px; width: 120px; }
 }
+
+/* Full-width hero with background photo */
+.h-hero-bg { position: relative; overflow: hidden; padding: 120px 0 110px; min-height: 640px; display: flex; align-items: center;
+  background: #2A2524; border-bottom: 0; }
+.h-hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 45%; }
+.h-hero-bg::before { content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(30,26,25,.92) 0%, rgba(30,26,25,.78) 42%, rgba(30,26,25,.35) 75%, rgba(30,26,25,.2) 100%); }
+.h-hero-inner { position: relative; width: 100%; }
+.h-hero-bg h1 { color: #FFFFFF; max-width: 760px; }
+.h-hero-bg .eyebrow { color: #FE7A57; }
+.h-hero-bg .lead { color: #E9E2DE; }
+.h-hero-bg .h-ticks { color: #F4EFEB; }
+.h-hero-bg .h-ticks svg { color: #FE7A57; }
+.h-hero-bg .btn.ghost { background: transparent; color: #fff; border-color: rgba(255,255,255,.8); }
+.h-hero-bg .btn.ghost:hover { background: rgba(255,255,255,.12); }
+@media (max-width: 760px) {
+  .h-hero-bg { padding: 72px 0; min-height: 0; }
+  .h-hero-bg::before { background: linear-gradient(180deg, rgba(30,26,25,.7) 0%, rgba(30,26,25,.88) 100%); }
+}
+.h-hero-img { z-index: 0; }
+.h-hero-bg::before { z-index: 1; }
+.h-hero-inner { z-index: 2; }
